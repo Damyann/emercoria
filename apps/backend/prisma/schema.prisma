@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum AccountType {
+  ADMIN
+  PLAYER
+}
+
+enum ModeratorLevel {
+  MOD_1
+  MOD_2
+  MOD_3
+}
+
+model User {
+  id             String          @id @default(cuid())
+  email          String          @unique
+  passwordHash   String          @map("password_hash")
+  nickname       String          @unique
+  accountType    AccountType     @default(PLAYER) @map("account_type")
+  moderatorLevel ModeratorLevel? @map("moderator_level")
+  isActive       Boolean         @default(true) @map("is_active")
+  lastLoginAt    DateTime?       @map("last_login_at")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+
+  @@index([accountType])
+  @@index([moderatorLevel])
+  @@map("users")
+}

@@ -1,0 +1,17 @@
+﻿node_modules/
+.pnpm-store/
+dist/
+build/
+.next/
+coverage/
+.env
+.env.*
+!.env.example
+
+apps/*/node_modules/
+apps/*/dist/
+apps/*/.next/
+apps/*/coverage/
+
+.DS_Store
+Thumbs.db
