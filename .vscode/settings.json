@@ -1,6 +1,11 @@
 {
   "typescript.validate.enable": true,
+  "typescript.tsdk": "apps/backend/node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
   "eslint.rules.customizations": [
-    { "rule": "prettier/prettier", "severity": "off" }
+    {
+      "rule": "prettier/prettier",
+      "severity": "off"
+    }
   ]
 }
