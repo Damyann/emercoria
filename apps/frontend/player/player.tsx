@@ -1,58 +1,74 @@
 'use client';
 
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
+import logo from '../pictures/logo.png';
 
 type AccountType='ADMIN'|'PLAYER';
 type SessionData={accessToken:string;expiresIn:number;tokenType:string;user:{id:string;email:string;nickname:string;accountType:AccountType;moderatorLevel:string|null}};
 const STORAGE_KEY='emercoria.session';
 const readSession=()=>{if(typeof window==='undefined') return null;try{return JSON.parse(window.sessionStorage.getItem(STORAGE_KEY)||'null') as SessionData|null;}catch{return null;}};
-const Tile=({label,value}:{label:string;value:string})=><div className='rounded-[20px] border border-white/10 bg-white/5 px-4 py-4'><div className='text-[10px] font-black uppercase tracking-[.2em] text-white/40'>{label}</div><div className='mt-2 text-[22px] font-black text-white'>{value}</div></div>;
+
+const Btn=({label,children}:{label:string;children:React.ReactNode})=><button type='button' aria-label={label} className='flex h-[46px] w-[46px] items-center justify-center border border-black/10 bg-white text-[#1b1d21] shadow-[0_8px_24px_rgba(15,23,42,.08)] transition hover:bg-[#f3f4f6]'><span className='h-[22px] w-[22px]'>{children}</span></button>;
+const ProfileIcon=()=>(
+  <svg viewBox='0 0 24 24' fill='none' aria-hidden='true' className='h-full w-full'>
+    <path d='M12 12.25a4.25 4.25 0 1 0 0-8.5 4.25 4.25 0 0 0 0 8.5Z' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'/>
+    <path d='M4.75 19.25a7.25 7.25 0 0 1 14.5 0' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'/>
+  </svg>
+);
+const MessagesIcon=()=>(
+  <svg viewBox='0 0 24 24' fill='none' aria-hidden='true' className='h-full w-full'>
+    <path d='M6.25 17.25 3.75 19V7.25A3.25 3.25 0 0 1 7 4h10a3.25 3.25 0 0 1 3.25 3.25v6.5A3.25 3.25 0 0 1 17 17H6.25Z' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'/>
+    <path d='M8 8.5h8M8 12h5.5' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round'/>
+  </svg>
+);
+const NotificationsIcon=()=>(
+  <svg viewBox='0 0 24 24' fill='none' aria-hidden='true' className='h-full w-full'>
+    <path d='M7 16.75h10l-1.05-1.55A4.92 4.92 0 0 1 15.1 12.4V10.9a3.1 3.1 0 1 0-6.2 0v1.5c0 1-.3 1.98-.85 2.8L7 16.75Z' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'/>
+    <path d='M10 19a2.15 2.15 0 0 0 4 0' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round'/>
+    <path d='M12 4.1v.8' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round'/>
+  </svg>
+);
+const MapIcon=()=>(
+  <svg viewBox='0 0 24 24' fill='none' aria-hidden='true' className='h-full w-full'>
+    <path d='m4.75 6.25 4.5-1.5 5.5 2 5-2 1.5.5v12.5l-4.5 1.5-5.5-2-5 2-1.5-.5V6.25Z' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'/>
+    <path d='M9.25 4.75v12.5M14.75 6.75v12.5' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'/>
+  </svg>
+);
+const SettingsIcon=()=>(
+  <svg viewBox='0 0 24 24' fill='none' aria-hidden='true' className='h-full w-full'>
+    <path d='M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z' stroke='currentColor' strokeWidth='1.8'/>
+    <path d='M19.15 13.1v-2.2l-1.8-.5a5.8 5.8 0 0 0-.55-1.3l.95-1.6-1.55-1.55-1.6.95a5.8 5.8 0 0 0-1.3-.55l-.5-1.8h-2.2l-.5 1.8a5.8 5.8 0 0 0-1.3.55l-1.6-.95-1.55 1.55.95 1.6a5.8 5.8 0 0 0-.55 1.3l-1.8.5v2.2l1.8.5a5.8 5.8 0 0 0 .55 1.3l-.95 1.6 1.55 1.55 1.6-.95c.4.24.84.42 1.3.55l.5 1.8h2.2l.5-1.8c.46-.13.9-.31 1.3-.55l1.6.95 1.55-1.55-.95-1.6c.24-.4.42-.84.55-1.3l1.8-.5Z' stroke='currentColor' strokeWidth='1.45' strokeLinecap='round' strokeLinejoin='round'/>
+  </svg>
+);
 
 export default function PlayerPage(){
   const router=useRouter();
   const [ready,setReady]=useState(false);
-  const [session,setSession]=useState<SessionData|null>(null);
-  useEffect(()=>{const next=readSession();if(!next){router.replace('/login');return;}if(next.user.accountType!=='PLAYER'){router.replace('/admin');return;}setSession(next);setReady(true);},[router]);
-  const nickname=useMemo(()=>session?.user.nickname||'Играч',[session]);
+  useEffect(()=>{
+    const next=readSession();
+    if(!next){router.replace('/login');return;}
+    if(next.user.accountType!=='PLAYER'){router.replace('/admin');return;}
+    setReady(true);
+  },[router]);
   if(!ready) return <main className='min-h-screen bg-[#02080d]' />;
   return(
-    <main className='min-h-screen bg-[linear-gradient(180deg,#02080d,#071019)] px-5 py-8 text-white sm:px-8'>
-      <div className='mx-auto max-w-[1240px]'>
-        <section className='overflow-hidden rounded-[30px] border border-sky-400/24 bg-[linear-gradient(180deg,rgba(7,17,26,.94),rgba(3,8,13,.9))] p-6 shadow-[0_26px_70px_rgba(0,0,0,.45)] sm:p-8'>
-          <div className='flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between'>
-            <div>
-              <div className='inline-flex items-center rounded-full border border-sky-300/20 bg-sky-500/10 px-3 py-2 text-[11px] font-black uppercase tracking-[.22em] text-sky-100'>Player hub</div>
-              <h1 className='mt-4 text-[36px] font-black uppercase tracking-[.05em] sm:text-[48px]'>Добре дошъл, {nickname}</h1>
-              <p className='mt-3 max-w-[760px] text-[15px] font-bold leading-7 text-white/58'>Това е базовият player дизайн. След login с PLAYER профил redirect-ът идва тук автоматично.</p>
-            </div>
-            <button onClick={()=>{window.sessionStorage.removeItem(STORAGE_KEY);router.replace('/login');}} className='rounded-[18px] border border-white/12 bg-white/5 px-5 py-3 text-[12px] font-black uppercase tracking-[.18em] text-white/86 transition hover:border-sky-400/45 hover:bg-sky-500/10'>Изход</button>
+    <main className='min-h-screen bg-[linear-gradient(180deg,#02080d,#071019)] text-[#1b1d21]'>
+      <div className='mx-auto flex min-h-screen w-[80%] flex-col'>
+        <header className='flex h-[88px] items-center border-x border-b border-black/10 bg-[#f7f7f8] px-4'>
+          <div className='mr-[-92px] flex h-[88px] w-[240px] shrink-0 items-center overflow-hidden'>
+            <Image src={logo} alt='eMercoria logo' priority width={240} height={78} className='h-[78px] w-auto max-w-none origin-left scale-[1.35] object-contain' sizes='240px'/>
           </div>
-          <div className='mt-8 grid gap-4 md:grid-cols-4'>
-            <Tile label='Роля' value='PLAYER'/>
-            <Tile label='Ник' value={session?.user.nickname||'-'}/>
-            <Tile label='Имейл' value={session?.user.email||'-'}/>
-            <Tile label='Статус' value='ONLINE'/>
+          <div className='ml-[50px] flex items-center gap-3'>
+            <Btn label='Профил'><ProfileIcon/></Btn>
+            <Btn label='Съобщения'><MessagesIcon/></Btn>
+            <Btn label='Известия'><NotificationsIcon/></Btn>
+            <Btn label='Карта'><MapIcon/></Btn>
+            <Btn label='Настройки'><SettingsIcon/></Btn>
           </div>
-        </section>
-        <section className='mt-6 grid gap-6 lg:grid-cols-[1.06fr_.94fr]'>
-          <div className='rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(5,14,20,.94),rgba(3,8,12,.92))] p-6'>
-            <div className='text-[12px] font-black uppercase tracking-[.22em] text-white/42'>Основни секции</div>
-            <div className='mt-4 grid gap-3 sm:grid-cols-2'>
-              {['Моята нация','Ресурси','Пазар','Армия'].map((item)=><div key={item} className='rounded-[20px] border border-sky-400/14 bg-sky-500/6 px-4 py-4 text-[15px] font-black text-white'>{item}</div>)}
-            </div>
-          </div>
-          <div className='rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(5,14,20,.94),rgba(3,8,12,.92))] p-6'>
-            <div className='text-[12px] font-black uppercase tracking-[.22em] text-white/42'>Preview</div>
-            <div className='mt-4 space-y-3'>
-              {[
-                ['Злато','12,400'],
-                ['Население','84,200'],
-                ['Енергия','91%'],
-              ].map(([label,value])=><div key={label} className='flex items-center justify-between rounded-[18px] border border-white/8 bg-white/5 px-4 py-4'><span className='text-[13px] font-black uppercase tracking-[.14em] text-white/56'>{label}</span><span className='text-[20px] font-black text-white'>{value}</span></div>)}
-            </div>
-          </div>
-        </section>
+        </header>
+        <section className='min-h-[calc(100vh-88px)] flex-1 border-x border-b border-black/10 bg-[#f7f7f8]' />
       </div>
     </main>
   );
