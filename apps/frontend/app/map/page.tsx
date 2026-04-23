@@ -1,137 +1,96 @@
-import { promises as fs } from "node:fs";
-import path from "node:path";
+'use client';
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { MapScreen } from "../../map/map-screen";
-import type { GeoOverlayRegion } from "../../map/types";
+import type { GeoOverlayRegion, WorldMapResponse } from "../../map/types";
 
-async function dirExists(dirPath: string) {
-  try {
-    const stat = await fs.stat(dirPath);
-    return stat.isDirectory();
-  } catch {
-    return false;
-  }
+const API_BASE=(process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/,"")||"http://localhost:3001/api");
+const STORAGE_KEY="emercoria.session";
+
+function readToken(){
+  if(typeof window==="undefined") return null;
+  try{return JSON.parse(window.sessionStorage.getItem(STORAGE_KEY)||"null")?.accessToken||null;}catch{return null;}
 }
-
-async function resolveRegionsDir() {
-  const candidates = [
-    path.join(process.cwd(), "map", "regions"),
-    path.join(process.cwd(), "apps", "frontend", "map", "regions"),
-    path.join(process.cwd(), "apps/frontend/map/regions"),
-  ];
-
-  for (const candidate of candidates) {
-    if (await dirExists(candidate)) {
-      return candidate;
+function normalizeRegion(region:any):GeoOverlayRegion{
+  const code=String(region.code||region.slug||region.id);
+  return {
+    id:Number(region.id),
+    code,
+    name:String(region.name||code),
+    resource:region.resource==null?null:String(region.resource),
+    countryId:Number(region.countryId),
+    countryCode:String(region.countryCode||""),
+    countryName:String(region.countryName||""),
+    baseColor:String(region.baseColor||region.countryColor||region.color||"#64748B"),
+    color:String(region.color||region.baseColor||region.countryColor||"#64748B"),
+    originalOwnerCountryId:region.originalOwnerCountryId!=null?Number(region.originalOwnerCountryId):region.countryId!=null?Number(region.countryId):null,
+    originalOwnerCountryCode:region.originalOwnerCountryCode??region.countryCode??null,
+    originalOwnerCountryName:region.originalOwnerCountryName??region.countryName??null,
+    currentOwnerCountryId:region.currentOwnerCountryId??region.ownerId??region.countryId??null,
+    currentOwnerCountryCode:region.currentOwnerCountryCode??region.ownerCode??region.countryCode??null,
+    currentOwnerCountryName:region.currentOwnerCountryName??region.ownerName??region.countryName??null,
+    capturedAt:region.capturedAt??null,
+    geometryType:String(region.geometryType||region.geometry?.type||"Polygon"),
+    geometry:{ type:(region.geometry?.type||region.geometryType||"Polygon"), coordinates:region.geometry?.coordinates??region.geometry },
+    neighbors:Array.isArray(region.neighbors)?region.neighbors.map((neighbor:any)=>({
+      id:Number(neighbor.id),
+      code:String(neighbor.code||neighbor.slug||neighbor.id),
+      name:String(neighbor.name||neighbor.code||neighbor.id),
+      countryId:Number(neighbor.countryId),
+      countryCode:String(neighbor.countryCode||""),
+      countryName:String(neighbor.countryName||""),
+    })):[]
+  };
+}
+async function fetchMap(token:string){
+  const endpoints=["/territories/map","/world/map"];
+  let lastError:Error|null=null;
+  for(const endpoint of endpoints){
+    try{
+      const res=await fetch(`${API_BASE}${endpoint}`,{headers:{Authorization:`Bearer ${token}`},cache:"no-store"});
+      if(res.status===401||res.status===403) return { unauthorized:true as const };
+      const data=await res.json().catch(()=>null) as WorldMapResponse | null;
+      if(!res.ok||!data) throw new Error("Неуспешно зареждане на картата.");
+      return { unauthorized:false as const, data };
+    }catch(err){
+      lastError=err instanceof Error?err:new Error("Неуспешно зареждане на картата.");
     }
   }
-
-  return candidates[0];
+  throw lastError||new Error("Неуспешно зареждане на картата.");
 }
 
-function slugify(value: string) {
-  return value
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
+export default function MapPage(){
+  const router=useRouter();
+  const [regions,setRegions]=useState<GeoOverlayRegion[]>([]);
+  const [seasonName,setSeasonName]=useState<string|null>(null);
+  const [loading,setLoading]=useState(true);
+  const [error,setError]=useState<string|null>(null);
 
-function toRingSet(value: unknown): Array<[number, number]> {
-  if (!Array.isArray(value) || value.length === 0) return [];
+  useEffect(()=>{
+    const token=readToken();
+    if(!token){router.replace("/login");return;}
+    let cancelled=false;
+    (async()=>{
+      try{
+        setLoading(true);setError(null);
+        const result=await fetchMap(token);
+        if(result.unauthorized){
+          window.sessionStorage.removeItem(STORAGE_KEY);
+          router.replace("/login");
+          return;
+        }
+        if(cancelled) return;
+        setSeasonName(result.data?.season?.name||null);
+        setRegions((result.data?.regions||[]).map(normalizeRegion));
+      }catch(err){
+        if(!cancelled) setError(err instanceof Error?err.message:"Неуспешно зареждане на картата.");
+      }finally{
+        if(!cancelled) setLoading(false);
+      }
+    })();
+    return ()=>{cancelled=true;};
+  },[router]);
 
-  const outerRing = value[0];
-  if (!Array.isArray(outerRing)) return [];
-
-  return outerRing
-    .map((point) => {
-      if (!Array.isArray(point) || point.length < 2) return null;
-      const lng = Number(point[0]);
-      const lat = Number(point[1]);
-      if (Number.isNaN(lng) || Number.isNaN(lat)) return null;
-      return [lng, lat] as [number, number];
-    })
-    .filter((point): point is [number, number] => point !== null);
-}
-
-function extractPolygons(geometry: { type?: string; coordinates?: unknown }): Array<Array<[number, number]>> {
-  if (!geometry.type || !geometry.coordinates) return [];
-
-  if (geometry.type === "Polygon") {
-    return [toRingSet(geometry.coordinates)];
-  }
-
-  if (geometry.type === "MultiPolygon" && Array.isArray(geometry.coordinates)) {
-    return geometry.coordinates
-      .map((polygon) => toRingSet(polygon))
-      .filter((polygon) => polygon.length > 0);
-  }
-
-  return [];
-}
-
-function normalizeGeoJson(input: unknown, fileName: string, index: number): GeoOverlayRegion | null {
-  if (!input || typeof input !== "object") return null;
-
-  const featureCollection = input as {
-    features?: Array<{
-      properties?: Record<string, unknown>;
-      geometry?: {
-        type?: string;
-        coordinates?: unknown;
-      };
-    }>;
-  };
-
-  const feature = featureCollection.features?.[0];
-  if (!feature?.properties || !feature.geometry) return null;
-
-  const name =
-    typeof feature.properties.shapeName === "string"
-      ? feature.properties.shapeName
-      : typeof feature.properties.name === "string"
-        ? feature.properties.name
-        : `${fileName.replace(/\.json$/i, "")}-${index + 1}`;
-
-  const polygons = extractPolygons(feature.geometry);
-  if (polygons.length === 0) return null;
-
-  return {
-    id: slugify(name || fileName),
-    fileName,
-    name,
-    iso: typeof feature.properties.shapeISO === "string" ? feature.properties.shapeISO : null,
-    group: typeof feature.properties.shapeGroup === "string" ? feature.properties.shapeGroup : null,
-    shapeType: typeof feature.properties.shapeType === "string" ? feature.properties.shapeType : null,
-    polygons,
-  };
-}
-
-async function loadOverlayRegions(): Promise<GeoOverlayRegion[]> {
-  const regionsDir = await resolveRegionsDir();
-
-  let files: string[] = [];
-  try {
-    files = (await fs.readdir(regionsDir)).filter((file) => file.toLowerCase().endsWith(".json"));
-  } catch {
-    return [];
-  }
-
-  const loaded = await Promise.all(
-    files.map(async (file) => {
-      const raw = await fs.readFile(path.join(regionsDir, file), "utf8");
-      return { file, data: JSON.parse(raw) as unknown };
-    }),
-  );
-
-  return loaded
-    .flatMap(({ file, data }, index) => {
-      const region = normalizeGeoJson(data, file, index);
-      return region ? [region] : [];
-    })
-    .sort((a, b) => a.name.localeCompare(b.name));
-}
-
-export default async function MapPage() {
-  const regions = await loadOverlayRegions();
-  return <MapScreen regions={regions} />;
+  return <MapScreen regions={regions} seasonName={seasonName} loading={loading} error={error} />;
 }

@@ -11,37 +11,11 @@ const STORAGE_KEY='emercoria.session';
 const readSession=()=>{if(typeof window==='undefined') return null;try{return JSON.parse(window.sessionStorage.getItem(STORAGE_KEY)||'null') as SessionData|null;}catch{return null;}};
 
 const Btn=({label,children}:{label:string;children:React.ReactNode})=><button type='button' aria-label={label} className='flex h-[46px] w-[46px] items-center justify-center border border-black/10 bg-white text-[#1b1d21] shadow-[0_8px_24px_rgba(15,23,42,.08)] transition hover:bg-[#f3f4f6]'><span className='h-[22px] w-[22px]'>{children}</span></button>;
-const ProfileIcon=()=>(
-  <svg viewBox='0 0 24 24' fill='none' aria-hidden='true' className='h-full w-full'>
-    <path d='M12 12.25a4.25 4.25 0 1 0 0-8.5 4.25 4.25 0 0 0 0 8.5Z' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'/>
-    <path d='M4.75 19.25a7.25 7.25 0 0 1 14.5 0' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'/>
-  </svg>
-);
-const MessagesIcon=()=>(
-  <svg viewBox='0 0 24 24' fill='none' aria-hidden='true' className='h-full w-full'>
-    <path d='M6.25 17.25 3.75 19V7.25A3.25 3.25 0 0 1 7 4h10a3.25 3.25 0 0 1 3.25 3.25v6.5A3.25 3.25 0 0 1 17 17H6.25Z' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'/>
-    <path d='M8 8.5h8M8 12h5.5' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round'/>
-  </svg>
-);
-const NotificationsIcon=()=>(
-  <svg viewBox='0 0 24 24' fill='none' aria-hidden='true' className='h-full w-full'>
-    <path d='M7 16.75h10l-1.05-1.55A4.92 4.92 0 0 1 15.1 12.4V10.9a3.1 3.1 0 1 0-6.2 0v1.5c0 1-.3 1.98-.85 2.8L7 16.75Z' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'/>
-    <path d='M10 19a2.15 2.15 0 0 0 4 0' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round'/>
-    <path d='M12 4.1v.8' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round'/>
-  </svg>
-);
-const MapIcon=()=>(
-  <svg viewBox='0 0 24 24' fill='none' aria-hidden='true' className='h-full w-full'>
-    <path d='m4.75 6.25 4.5-1.5 5.5 2 5-2 1.5.5v12.5l-4.5 1.5-5.5-2-5 2-1.5-.5V6.25Z' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'/>
-    <path d='M9.25 4.75v12.5M14.75 6.75v12.5' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'/>
-  </svg>
-);
-const SettingsIcon=()=>(
-  <svg viewBox='0 0 24 24' fill='none' aria-hidden='true' className='h-full w-full'>
-    <path d='M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z' stroke='currentColor' strokeWidth='1.8'/>
-    <path d='M19.15 13.1v-2.2l-1.8-.5a5.8 5.8 0 0 0-.55-1.3l.95-1.6-1.55-1.55-1.6.95a5.8 5.8 0 0 0-1.3-.55l-.5-1.8h-2.2l-.5 1.8a5.8 5.8 0 0 0-1.3.55l-1.6-.95-1.55 1.55.95 1.6a5.8 5.8 0 0 0-.55 1.3l-1.8.5v2.2l1.8.5a5.8 5.8 0 0 0 .55 1.3l-.95 1.6 1.55 1.55 1.6-.95c.4.24.84.42 1.3.55l.5 1.8h2.2l.5-1.8c.46-.13.9-.31 1.3-.55l1.6.95 1.55-1.55-.95-1.6c.24-.4.42-.84.55-1.3l1.8-.5Z' stroke='currentColor' strokeWidth='1.45' strokeLinecap='round' strokeLinejoin='round'/>
-  </svg>
-);
+const ProfileIcon=()=>(<svg viewBox='0 0 24 24' fill='none' aria-hidden='true' className='h-full w-full'><path d='M12 12.25a4.25 4.25 0 1 0 0-8.5 4.25 4.25 0 0 0 0 8.5Z' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'/><path d='M4.75 19.25a7.25 7.25 0 0 1 14.5 0' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'/></svg>);
+const MessagesIcon=()=>(<svg viewBox='0 0 24 24' fill='none' aria-hidden='true' className='h-full w-full'><path d='M6.25 17.25 3.75 19V7.25A3.25 3.25 0 0 1 7 4h10a3.25 3.25 0 0 1 3.25 3.25v6.5A3.25 3.25 0 0 1 17 17H6.25Z' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'/><path d='M8 8.5h8M8 12h5.5' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round'/></svg>);
+const NotificationsIcon=()=>(<svg viewBox='0 0 24 24' fill='none' aria-hidden='true' className='h-full w-full'><path d='M7 16.75h10l-1.05-1.55A4.92 4.92 0 0 1 15.1 12.4V10.9a3.1 3.1 0 1 0-6.2 0v1.5c0 1-.3 1.98-.85 2.8L7 16.75Z' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'/><path d='M10 19a2.15 2.15 0 0 0 4 0' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round'/><path d='M12 4.1v.8' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round'/></svg>);
+const MapIcon=()=>(<svg viewBox='0 0 24 24' fill='none' aria-hidden='true' className='h-full w-full'><path d='m4.75 6.25 4.5-1.5 5.5 2 5-2 1.5.5v12.5l-4.5 1.5-5.5-2-5 2-1.5-.5V6.25Z' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'/><path d='M9.25 4.75v12.5M14.75 6.75v12.5' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round'/></svg>);
+const SettingsIcon=()=>(<svg viewBox='0 0 24 24' fill='none' aria-hidden='true' className='h-full w-full'><path d='M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z' stroke='currentColor' strokeWidth='1.8'/><path d='M19.15 13.1v-2.2l-1.8-.5a5.8 5.8 0 0 0-.55-1.3l.95-1.6-1.55-1.55-1.6.95a5.8 5.8 0 0 0-1.3-.55l-.5-1.8h-2.2l-.5 1.8a5.8 5.8 0 0 0-1.3.55l-1.6-.95-1.55 1.55.95 1.6a5.8 5.8 0 0 0-.55 1.3l-1.8.5v2.2l1.8.5a5.8 5.8 0 0 0 .55 1.3l-.95 1.6 1.55 1.55 1.6-.95c.4.24.84.42 1.3.55l.5 1.8h2.2l.5-1.8c.46-.13.9-.31 1.3-.55l1.6.95 1.55-1.55-.95-1.6c.24-.4.42-.84.55-1.3l1.8-.5Z' stroke='currentColor' strokeWidth='1.45' strokeLinecap='round' strokeLinejoin='round'/></svg>);
 
 export default function PlayerPage(){
   const router=useRouter();
@@ -53,14 +27,15 @@ export default function PlayerPage(){
     setReady(true);
   },[router]);
   if(!ready) return <main className='min-h-screen bg-[#02080d]' />;
+
   return(
     <main className='min-h-screen bg-[linear-gradient(180deg,#02080d,#071019)] text-[#1b1d21]'>
       <div className='mx-auto flex min-h-screen w-[80%] flex-col'>
         <header className='flex h-[88px] items-center border-x border-b border-black/10 bg-[#f7f7f8] px-4'>
-          <div className='mr-[-92px] flex h-[88px] w-[240px] shrink-0 items-center overflow-hidden'>
+          <div className='flex h-[88px] w-[240px] shrink-0 items-center overflow-hidden pl-3'>
             <Image src={logo} alt='eMercoria logo' priority width={240} height={78} className='h-[78px] w-auto max-w-none origin-left scale-[1.35] object-contain' sizes='240px'/>
           </div>
-          <div className='ml-[50px] flex items-center gap-3'>
+          <div className='ml-[34px] flex items-center gap-3'>
             <Btn label='Профил'><ProfileIcon/></Btn>
             <Btn label='Съобщения'><MessagesIcon/></Btn>
             <Btn label='Известия'><NotificationsIcon/></Btn>
@@ -68,7 +43,11 @@ export default function PlayerPage(){
             <Btn label='Настройки'><SettingsIcon/></Btn>
           </div>
         </header>
-        <section className='min-h-[calc(100vh-88px)] flex-1 border-x border-b border-black/10 bg-[#f7f7f8]' />
+
+        <section className='flex min-h-[calc(100vh-88px)] flex-1 border-x border-b border-black/10 bg-[#f7f7f8]'>
+          <aside className='w-[240px] shrink-0 border-r border-black/10 bg-[#f3f4f6]' />
+          <div className='min-h-[calc(100vh-88px)] flex-1 bg-[#f7f7f8]' />
+        </section>
       </div>
     </main>
   );

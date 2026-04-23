@@ -1,9 +1,24 @@
-export type GeoOverlayRegion = {
-  id: string;
-  fileName: string;
-  name: string;
-  iso: string | null;
-  group: string | null;
-  shapeType: string | null;
-  polygons: Array<Array<[number, number]>>;
+export type RegionGeometry={type:"Polygon"|"MultiPolygon";coordinates:unknown;};
+export type RegionNeighbor={id:number;code:string;name:string;countryId:number;countryCode:string;countryName:string;};
+export type GeoOverlayRegion={
+  id:number;
+  code:string;
+  name:string;
+  resource:string|null;
+  countryId:number;
+  countryCode:string;
+  countryName:string;
+  baseColor:string;
+  color:string;
+  originalOwnerCountryId:number|null;
+  originalOwnerCountryCode:string|null;
+  originalOwnerCountryName:string|null;
+  currentOwnerCountryId:number|string|null;
+  currentOwnerCountryCode:string|null;
+  currentOwnerCountryName:string|null;
+  capturedAt:string|null;
+  geometryType:string;
+  geometry:RegionGeometry;
+  neighbors:RegionNeighbor[];
 };
+export type WorldMapResponse={season:{id:number;name:string;startsAt:string;endsAt:string|null;}|null;regions:any[];};

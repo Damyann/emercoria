@@ -33,3 +33,112 @@ model User {
   @@index([moderatorLevel])
   @@map("users")
 }
+
+model Country {
+  id          Int      @id
+  code        String   @unique
+  name        String   @unique
+  baseColor   String   @map("base_color")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  regions     Region[]
+  stateOwners SeasonRegionState[]      @relation("SeasonRegionCurrentOwnerCountry")
+  historyFrom RegionOwnershipHistory[] @relation("HistoryFromOwnerCountry")
+  historyTo   RegionOwnershipHistory[] @relation("HistoryToOwnerCountry")
+
+  @@index([isActive])
+  @@map("countries")
+}
+
+model Region {
+  id                   Int                      @id
+  countryId            Int                      @map("country_id")
+  code                 String                   @unique
+  name                 String
+  resource             String?
+  geometryType         String                   @map("geometry_type")
+  geometryJson         Json                     @map("geometry_json")
+  isActive             Boolean                  @default(true) @map("is_active")
+  createdAt            DateTime                 @default(now()) @map("created_at")
+  updatedAt            DateTime                 @updatedAt @map("updated_at")
+  country              Country                  @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  neighbors            RegionNeighbor[]         @relation("RegionNeighbors")
+  neighboringTo        RegionNeighbor[]         @relation("NeighborToRegion")
+  seasonStates         SeasonRegionState[]
+  history              RegionOwnershipHistory[]
+
+  @@unique([countryId, name])
+  @@index([countryId])
+  @@index([isActive])
+  @@map("regions")
+}
+
+model RegionNeighbor {
+  regionId         Int    @map("region_id")
+  neighborRegionId Int    @map("neighbor_region_id")
+  region           Region @relation("RegionNeighbors", fields: [regionId], references: [id], onDelete: Cascade)
+  neighbor         Region @relation("NeighborToRegion", fields: [neighborRegionId], references: [id], onDelete: Cascade)
+
+  @@id([regionId, neighborRegionId])
+  @@index([neighborRegionId])
+  @@map("region_neighbors")
+}
+
+model Season {
+  id           Int                      @id @default(autoincrement())
+  name         String                   @unique
+  startsAt     DateTime                 @map("starts_at")
+  endsAt       DateTime?                @map("ends_at")
+  isActive     Boolean                  @default(false) @map("is_active")
+  createdAt    DateTime                 @default(now()) @map("created_at")
+  updatedAt    DateTime                 @updatedAt @map("updated_at")
+  regionStates SeasonRegionState[]
+  history      RegionOwnershipHistory[]
+
+  @@index([isActive])
+  @@map("seasons")
+}
+
+model SeasonRegionState {
+  id                    Int      @id @default(autoincrement())
+  seasonId              Int      @map("season_id")
+  regionId              Int      @map("region_id")
+  currentOwnerCountryId Int?     @map("current_owner_country_id")
+  currentColor          String   @map("current_color")
+  capturedAt            DateTime? @map("captured_at")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+  season                Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  region                Region   @relation(fields: [regionId], references: [id], onDelete: Cascade)
+  currentOwnerCountry   Country? @relation("SeasonRegionCurrentOwnerCountry", fields: [currentOwnerCountryId], references: [id], onDelete: SetNull)
+
+  @@unique([seasonId, regionId])
+  @@index([seasonId])
+  @@index([regionId])
+  @@index([currentOwnerCountryId])
+  @@map("season_region_states")
+}
+
+model RegionOwnershipHistory {
+  id                 Int      @id @default(autoincrement())
+  seasonId           Int      @map("season_id")
+  regionId           Int      @map("region_id")
+  fromOwnerCountryId Int?     @map("from_owner_country_id")
+  toOwnerCountryId   Int?     @map("to_owner_country_id")
+  fromColor          String?  @map("from_color")
+  toColor            String   @map("to_color")
+  changedAt          DateTime @default(now()) @map("changed_at")
+  reason             String?
+  season             Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  region             Region   @relation(fields: [regionId], references: [id], onDelete: Cascade)
+  fromOwnerCountry   Country? @relation("HistoryFromOwnerCountry", fields: [fromOwnerCountryId], references: [id], onDelete: SetNull)
+  toOwnerCountry     Country? @relation("HistoryToOwnerCountry", fields: [toOwnerCountryId], references: [id], onDelete: SetNull)
+
+  @@index([seasonId])
+  @@index([regionId])
+  @@index([fromOwnerCountryId])
+  @@index([toOwnerCountryId])
+  @@index([changedAt])
+  @@map("region_ownership_history")
+}
