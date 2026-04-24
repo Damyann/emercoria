@@ -29,6 +29,10 @@ export default function PlayerPage(){
   },[router]);
   if(!ready) return <main className='min-h-screen bg-[#02080d]' />;
 
+  const leftPanel={width:240,minWidth:240,flex:'0 0 240px',borderRight:'1px solid #000'} as const;
+  const middlePanel={width:450,minWidth:450,flex:'0 0 450px'} as const;
+  const rightPanel={minWidth:0,flex:'1 1 auto',borderLeft:'1px solid #000'} as const;
+
   return(
     <main className='min-h-screen text-[#1b1d21]' style={{backgroundImage:`url(${background.src})`,backgroundSize:'cover',backgroundPosition:'center',backgroundRepeat:'no-repeat',backgroundAttachment:'fixed'}}>
       <div className='mx-auto flex min-h-screen flex-col' style={{width:'60%'}}>
@@ -36,7 +40,7 @@ export default function PlayerPage(){
           <div className='flex h-[70px] w-[240px] shrink-0 items-center justify-center overflow-hidden'>
             <Image src={logo} alt='eMercoria logo' priority width={180} height={58} className='h-[58px] w-auto object-contain' sizes='180px' style={{transform:'scale(2.15)',transformOrigin:'center'}}/>
           </div>
-          <div className='ml-[34px] flex items-center gap-3'>
+          <div className='flex items-center gap-3' style={{marginLeft:25}}>
             <Btn label='Профил'><ProfileIcon/></Btn>
             <Btn label='Съобщения'><MessagesIcon/></Btn>
             <Btn label='Известия'><NotificationsIcon/></Btn>
@@ -46,9 +50,9 @@ export default function PlayerPage(){
         </header>
 
         <section className='flex-1 border-l border-b border-black bg-[#f7f7f8]' style={{display:'flex',minHeight:'calc(100vh - 70px)'}}>
-          <aside style={{width:240,minWidth:240,flex:'0 0 240px',backgroundColor:'#dc2626',borderRight:'1px solid #000'}} />
-          <aside style={{width:450,minWidth:450,flex:'0 0 450px',backgroundColor:'#2563eb'}} />
-          <aside style={{minWidth:0,flex:'1 1 auto',backgroundColor:'#16a34a',borderLeft:'1px solid #000'}} />
+          <aside aria-label='left panel' style={leftPanel}/>
+          <aside aria-label='middle panel' style={middlePanel}/>
+          <aside aria-label='right panel' style={rightPanel}/>
         </section>
       </div>
     </main>
