@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import logo from '../pictures/logo.png';
+import background from '../pictures/background.png';
 
 type AccountType='ADMIN'|'PLAYER';
 type SessionData={accessToken:string;expiresIn:number;tokenType:string;user:{id:string;email:string;nickname:string;accountType:AccountType;moderatorLevel:string|null}};
@@ -29,11 +30,11 @@ export default function PlayerPage(){
   if(!ready) return <main className='min-h-screen bg-[#02080d]' />;
 
   return(
-    <main className='min-h-screen bg-[linear-gradient(180deg,#02080d,#071019)] text-[#1b1d21]'>
-      <div className='mx-auto flex min-h-screen flex-col' style={{width:'70%'}}>
-        <header className='flex h-[88px] items-center border-x border-b border-black/10 bg-[#f7f7f8] px-4'>
-          <div className='flex h-[88px] w-[240px] shrink-0 items-center overflow-hidden pl-3'>
-            <Image src={logo} alt='eMercoria logo' priority width={240} height={78} className='h-[78px] w-auto max-w-none origin-left scale-[1.35] object-contain' sizes='240px'/>
+    <main className='min-h-screen text-[#1b1d21]' style={{backgroundImage:`url(${background.src})`,backgroundSize:'cover',backgroundPosition:'center',backgroundRepeat:'no-repeat',backgroundAttachment:'fixed'}}>
+      <div className='mx-auto flex min-h-screen flex-col' style={{width:'60%'}}>
+        <header className='flex h-[70px] items-center border-x border-b border-black/10 bg-[#f7f7f8] pr-4'>
+          <div className='flex h-[70px] w-[240px] shrink-0 items-center justify-center overflow-hidden'>
+            <Image src={logo} alt='eMercoria logo' priority width={180} height={58} className='h-[58px] w-auto object-contain' sizes='180px' style={{transform:'scale(2.15)',transformOrigin:'center'}}/>
           </div>
           <div className='ml-[34px] flex items-center gap-3'>
             <Btn label='Профил'><ProfileIcon/></Btn>
@@ -44,9 +45,10 @@ export default function PlayerPage(){
           </div>
         </header>
 
-        <section className='flex-1 border-l border-b border-black bg-[#f7f7f8]' style={{display:'flex',minHeight:'calc(100vh - 88px)'}}>
+        <section className='flex-1 border-l border-b border-black bg-[#f7f7f8]' style={{display:'flex',minHeight:'calc(100vh - 70px)'}}>
           <aside style={{width:240,minWidth:240,flex:'0 0 240px',backgroundColor:'#dc2626',borderRight:'1px solid #000'}} />
-          <aside style={{width:450,minWidth:450,flex:'0 0 450px',backgroundColor:'#2563eb',borderRight:'1px solid #000'}} />
+          <aside style={{width:450,minWidth:450,flex:'0 0 450px',backgroundColor:'#2563eb'}} />
+          <aside style={{minWidth:0,flex:'1 1 auto',backgroundColor:'#16a34a',borderLeft:'1px solid #000'}} />
         </section>
       </div>
     </main>
