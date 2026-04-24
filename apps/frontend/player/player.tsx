@@ -30,7 +30,7 @@ export default function PlayerPage(){
 
   return(
     <main className='min-h-screen bg-[linear-gradient(180deg,#02080d,#071019)] text-[#1b1d21]'>
-      <div className='mx-auto flex min-h-screen w-[80%] flex-col'>
+      <div className='mx-auto flex min-h-screen flex-col' style={{width:'70%'}}>
         <header className='flex h-[88px] items-center border-x border-b border-black/10 bg-[#f7f7f8] px-4'>
           <div className='flex h-[88px] w-[240px] shrink-0 items-center overflow-hidden pl-3'>
             <Image src={logo} alt='eMercoria logo' priority width={240} height={78} className='h-[78px] w-auto max-w-none origin-left scale-[1.35] object-contain' sizes='240px'/>
@@ -44,9 +44,9 @@ export default function PlayerPage(){
           </div>
         </header>
 
-        <section className='flex min-h-[calc(100vh-88px)] flex-1 border-x border-b border-black/10 bg-[#f7f7f8]'>
-          <aside className='w-[240px] shrink-0 border-r border-black/10 bg-[#f3f4f6]' />
-          <div className='min-h-[calc(100vh-88px)] flex-1 bg-[#f7f7f8]' />
+        <section className='flex-1 border-l border-b border-black bg-[#f7f7f8]' style={{display:'flex',minHeight:'calc(100vh - 88px)'}}>
+          <aside style={{width:240,minWidth:240,flex:'0 0 240px',backgroundColor:'#dc2626',borderRight:'1px solid #000'}} />
+          <aside style={{width:450,minWidth:450,flex:'0 0 450px',backgroundColor:'#2563eb',borderRight:'1px solid #000'}} />
         </section>
       </div>
     </main>
