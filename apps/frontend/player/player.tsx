@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import logo from '../pictures/logo.png';
 import background from '../pictures/background.png';
+import leftPanelPicture from '../pictures/left_panel_picture.png';
+import leftPanelPosition from '../pictures/left_panel_position.png';
 
 type AccountType='ADMIN'|'PLAYER';
 type SessionData={accessToken:string;expiresIn:number;tokenType:string;user:{id:string;email:string;nickname:string;accountType:AccountType;moderatorLevel:string|null}};
@@ -29,13 +31,13 @@ export default function PlayerPage(){
   },[router]);
   if(!ready) return <main className='min-h-screen bg-[#02080d]' />;
 
-  const leftPanel={width:240,minWidth:240,flex:'0 0 240px',borderRight:'1px solid #000'} as const;
+  const leftPanel={width:250,minWidth:250,flex:'0 0 250px',borderRight:'1px solid #000',overflow:'hidden'} as const;
   const middlePanel={width:450,minWidth:450,flex:'0 0 450px'} as const;
   const rightPanel={minWidth:0,flex:'1 1 auto',borderLeft:'1px solid #000'} as const;
 
   return(
     <main className='min-h-screen text-[#1b1d21]' style={{backgroundImage:`url(${background.src})`,backgroundSize:'cover',backgroundPosition:'center',backgroundRepeat:'no-repeat',backgroundAttachment:'fixed'}}>
-      <div className='mx-auto flex min-h-screen flex-col' style={{width:'60%'}}>
+      <div className='mx-auto flex min-h-screen flex-col' style={{width:'70%'}}>
         <header className='flex h-[70px] items-center border-x border-b border-black/10 bg-[#f7f7f8] pr-4'>
           <div className='flex h-[70px] w-[240px] shrink-0 items-center justify-center overflow-hidden'>
             <Image src={logo} alt='eMercoria logo' priority width={180} height={58} className='h-[58px] w-auto object-contain' sizes='180px' style={{transform:'scale(2.15)',transformOrigin:'center'}}/>
@@ -50,7 +52,12 @@ export default function PlayerPage(){
         </header>
 
         <section className='flex-1 border-l border-b border-black bg-[#f7f7f8]' style={{display:'flex',minHeight:'calc(100vh - 70px)'}}>
-          <aside aria-label='left panel' style={leftPanel}/>
+          <aside aria-label='left panel' style={leftPanel}>
+            <div className='flex w-full flex-col items-center pt-0'>
+              <Image src={leftPanelPicture} alt='Player picture frame' priority width={250} height={250} className='h-[250px] w-[250px] object-contain' sizes='250px'/>
+              <Image src={leftPanelPosition} alt='Player current position frame' priority width={250} height={75} className='h-[75px] w-[250px] object-contain' sizes='250px'/>
+            </div>
+          </aside>
           <aside aria-label='middle panel' style={middlePanel}/>
           <aside aria-label='right panel' style={rightPanel}/>
         </section>
