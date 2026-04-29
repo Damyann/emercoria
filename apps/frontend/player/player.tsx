@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import logo from '../pictures/logo.png';
 import background from '../pictures/background.png';
 import leftPanelPicture from '../pictures/left_panel_picture.png';
@@ -26,18 +26,32 @@ const SettingsIcon=()=>(<svg viewBox='0 0 24 24' fill='none' aria-hidden='true' 
 
 export default function PlayerPage(){
   const router=useRouter();
+  const inputRef=useRef<HTMLInputElement|null>(null);
   const [ready,setReady]=useState(false);
+  const [avatarUrl,setAvatarUrl]=useState<string|null>(null);
+
   useEffect(()=>{
     const next=readSession();
     if(!next){router.replace('/login');return;}
     if(next.user.accountType!=='PLAYER'){router.replace('/admin');return;}
     setReady(true);
   },[router]);
+
+  useEffect(()=>()=>{if(avatarUrl) URL.revokeObjectURL(avatarUrl);},[avatarUrl]);
+
   if(!ready) return <main className='min-h-screen bg-[#02080d]' />;
 
   const leftPanel={width:250,minWidth:250,flex:'0 0 250px',borderRight:'1px solid #000',overflow:'hidden'} as const;
   const middlePanel={width:450,minWidth:450,flex:'0 0 450px'} as const;
   const rightPanel={minWidth:0,flex:'1 1 auto',borderLeft:'1px solid #000'} as const;
+
+  const pickAvatar=()=>inputRef.current?.click();
+  const setAvatar=(e:React.ChangeEvent<HTMLInputElement>)=>{
+    const file=e.target.files?.[0];
+    if(!file||!file.type.startsWith('image/')) return;
+    setAvatarUrl(prev=>{if(prev) URL.revokeObjectURL(prev);return URL.createObjectURL(file);});
+    e.target.value='';
+  };
 
   return(
     <main className='min-h-screen text-[#1b1d21]' style={{backgroundImage:`url(${background.src})`,backgroundSize:'cover',backgroundPosition:'center',backgroundRepeat:'no-repeat',backgroundAttachment:'fixed'}}>
@@ -58,8 +72,14 @@ export default function PlayerPage(){
         <section className='flex-1 border-l border-b border-black bg-[#f7f7f8]' style={{display:'flex',minHeight:'calc(100vh - 70px)'}}>
           <aside aria-label='left panel' style={leftPanel}>
             <div className='flex w-full flex-col items-center pt-0'>
-              <Image src={leftPanelPicture} alt='Player picture frame' priority width={250} height={250} className='h-[250px] w-[250px] object-contain' sizes='250px'/>
+              <div style={{position:'relative',width:250,height:250,flex:'0 0 250px'}}>
+                {avatarUrl&&<div aria-label='Selected player avatar preview' style={{position:'absolute',left:59.75,top:49.25,width:130.25,height:132.75,backgroundImage:`url(${avatarUrl})`,backgroundSize:'cover',backgroundPosition:'center',borderRadius:8,zIndex:2}}/>}
+                <input ref={inputRef} type='file' accept='image/*' onChange={setAvatar} style={{display:'none'}}/>
+                <Image src={leftPanelPicture} alt='Player picture frame' priority width={250} height={250} className='h-[250px] w-[250px] object-contain' sizes='250px' style={{position:'absolute',left:0,top:0,zIndex:3,pointerEvents:'none'}}/>
+              </div>
+
               <Image src={leftPanelPosition} alt='Player current position frame' priority width={250} height={75} className='h-[75px] w-[250px] object-contain' sizes='250px'/>
+
               <div style={{position:'relative',width:250,height:313,flex:'0 0 313px'}}>
                 <Image src={leftPanelTressury} alt='Player treasury frame' width={250} height={313} className='h-[313px] w-[250px] object-contain' sizes='250px'/>
                 <Image src={leftPanelMercoria} alt='Mercoria points' width={51} height={51} sizes='51px' style={{position:'absolute',left:32,top:55.5,width:51,height:51,objectFit:'contain',zIndex:2}}/>
@@ -68,7 +88,15 @@ export default function PlayerPage(){
               </div>
             </div>
           </aside>
-          <aside aria-label='middle panel' style={middlePanel}/>
+
+          <aside aria-label='middle panel' style={middlePanel}>
+            <div className='p-4'>
+              <button type='button' onClick={pickAvatar} className='border border-black/20 bg-white px-4 py-2 text-sm font-medium text-[#1b1d21] shadow-[0_8px_24px_rgba(15,23,42,.08)] transition hover:bg-[#f3f4f6]'>
+                Качи профилна снимка
+              </button>
+            </div>
+          </aside>
+
           <aside aria-label='right panel' style={rightPanel}/>
         </section>
       </div>
