@@ -8,6 +8,7 @@ import background from '../pictures/background.png';
 import leftPanelPicture from '../pictures/left_panel_picture.png';
 import leftPanelPosition from '../pictures/left_panel_position.png';
 import leftPanelTressury from '../pictures/left_panel_tressury.png';
+import leftPanelMain from '../pictures/left_panel_main.png';
 import leftPanelMercoria from '../pictures/left_panel_mercoria.png';
 import leftPanelGold from '../pictures/left_panel_gold.png';
 import leftPanelMoney from '../pictures/left_panel_money.png';
@@ -86,6 +87,16 @@ export default function PlayerPage(){
                 <Image src={leftPanelGold} alt='Gold' width={54} height={54} sizes='54px' style={{position:'absolute',left:35.75,top:125,width:45,height:54,objectFit:'contain',zIndex:2}}/>
                 <Image src={leftPanelMoney} alt='Money' width={58} height={58} sizes='58px' style={{position:'absolute',left:37,top:196,width:40,height:58,objectFit:'contain',zIndex:2}}/>
               </div>
+
+              <Image
+                src={leftPanelMain}
+                alt='Player main panel'
+                width={250}
+                height={550}
+                className='block h-[550px] w-[250px] object-fill'
+                sizes='250px'
+                style={{marginTop:-4}}
+              />
             </div>
           </aside>
 
