@@ -83,8 +83,8 @@ export default function PlayerPage(){
               <div style={{position:'relative',width:250,height:313,flex:'0 0 313px'}}>
                 <Image src={leftPanelTressury} alt='Player treasury frame' width={250} height={313} className='h-[313px] w-[250px] object-contain' sizes='250px'/>
                 <Image src={leftPanelMercoria} alt='Mercoria points' width={51} height={51} sizes='51px' style={{position:'absolute',left:32,top:55.5,width:51,height:51,objectFit:'contain',zIndex:2}}/>
-                <Image src={leftPanelGold} alt='Gold' width={58} height={58} sizes='58px' style={{position:'absolute',left:29,top:129,width:58,height:58,objectFit:'contain',zIndex:2}}/>
-                <Image src={leftPanelMoney} alt='Money' width={58} height={58} sizes='58px' style={{position:'absolute',left:29,top:197,width:58,height:58,objectFit:'contain',zIndex:2}}/>
+                <Image src={leftPanelGold} alt='Gold' width={54} height={54} sizes='54px' style={{position:'absolute',left:35.75,top:125,width:45,height:54,objectFit:'contain',zIndex:2}}/>
+                <Image src={leftPanelMoney} alt='Money' width={58} height={58} sizes='58px' style={{position:'absolute',left:37,top:196,width:40,height:58,objectFit:'contain',zIndex:2}}/>
               </div>
             </div>
           </aside>
